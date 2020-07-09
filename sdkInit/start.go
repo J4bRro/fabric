@@ -111,7 +111,9 @@ func InstallAndInstantiateCC(sdk *fabsdk.FabricSDK, info *InitInfo) (*channel.Cl
 	}
 
 	fmt.Println("链码实例化成功")
+}
 
+func CreateClient(sdk *fabsdk.FabricSDK, info *InitInfo) (*channel.Client, error) {
 	clientChannelContext := sdk.ChannelContext(info.ChannelID, fabsdk.WithUser(info.UserName), fabsdk.WithOrg(info.OrgName))
 	// returns a Client instance. Channel client can query chaincode, execute chaincode and register/unregister for chaincode events on specific channel.
 	channelClient, err := channel.New(clientChannelContext)
