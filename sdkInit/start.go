@@ -80,12 +80,12 @@ func CreateAndJoinChannel(sdk *fabsdk.FabricSDK, info *InitInfo) error {
 	return nil
 }
 
-func InstallAndInstantiateCC(sdk *fabsdk.FabricSDK, info *InitInfo) (*channel.Client, error) {
+func InstallAndInstantiateCC(sdk *fabsdk.FabricSDK, info *InitInfo) error {
 	fmt.Println("开始安装链码......")
 	// creates new go lang chaincode package
 	ccPkg, err := gopackager.NewCCPackage(info.ChaincodePath, info.ChaincodeGoPath)
 	if err != nil {
-		return nil, fmt.Errorf("创建链码包失败: %v", err)
+		return fmt.Errorf("创建链码包失败: %v", err)
 	}
 
 	// contains install chaincode request parameters
@@ -93,7 +93,7 @@ func InstallAndInstantiateCC(sdk *fabsdk.FabricSDK, info *InitInfo) (*channel.Cl
 	// allows administrators to install chaincode onto the filesystem of a peer
 	_, err = info.OrgResMgmt.InstallCC(installCCReq, resmgmt.WithRetry(retry.DefaultResMgmtOpts))
 	if err != nil {
-		return nil, fmt.Errorf("安装链码失败: %v", err)
+		return fmt.Errorf("安装链码失败: %v", err)
 	}
 
 	fmt.Println("指定的链码安装成功")
@@ -107,10 +107,11 @@ func InstallAndInstantiateCC(sdk *fabsdk.FabricSDK, info *InitInfo) (*channel.Cl
 	fmt.Println(info.OrgResMgmt)
 	_, err = info.OrgResMgmt.InstantiateCC(info.ChannelID, instantiateCCReq, resmgmt.WithRetry(retry.DefaultResMgmtOpts))
 	if err != nil {
-		return nil, fmt.Errorf("实例化链码失败: %v", err)
+		return fmt.Errorf("实例化链码失败: %v", err)
 	}
 
 	fmt.Println("链码实例化成功")
+	return nil
 }
 
 func CreateClient(sdk *fabsdk.FabricSDK, info *InitInfo) (*channel.Client, error) {
