@@ -12,26 +12,26 @@ type simpleCC struct{}
 
 func addRecord(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) != 2 {
-		return shim.Error("args numbers is wrong, require 2 args")
+		return shim.Error("100")
 	}
 	key := args[0]
 	value := args[1]
 	if key == "" || value == "" {
-		return shim.Error("args is illegal")
+		return shim.Error("101")
 	}
 	val, err := stub.GetState(key)
 	if err == nil && len(val) != 0 {
-		return shim.Error(fmt.Sprintf("%s is already exist", key))
+		return shim.Error("102")
 	}
 	if err = stub.PutState(key, []byte(value)); err != nil {
-		return shim.Error(fmt.Sprintf("There was an error adding record in the ledger: %s", err))
+		return shim.Error("106")
 	}
-	return shim.Success([]byte(fmt.Sprintf("record %s saved successfully", key)))
+	return shim.Success([]byte("200"))
 }
 
 func batchAddRecord(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) != 1 {
-		return shim.Error("args numbers is wrong, require 1 args")
+		return shim.Error("100")
 	}
 
 	jsonStream := []byte(args[0])
@@ -46,80 +46,92 @@ func batchAddRecord(stub shim.ChaincodeStubInterface, args []string) peer.Respon
 	var records []Record
 	err := json.Unmarshal(jsonStream, &records)
 	if err != nil {
-		return shim.Error(fmt.Sprintf("Unmarshal is wrong: %s", err))
+		return shim.Error("104")
+	}
+	if len(records) > 20 {
+		return shim.Error("105")
 	}
 	// fmt.Printf("%+v", records)
+
+	var Existed []string
+
 	for _, record := range records {
 		key := record.Key
 		value := record.Value
 		if key == "" || value == "" {
-			return shim.Error("args is illegal")
+			return shim.Error("101")
 		}
 		val, err := stub.GetState(key)
 		if err == nil && len(val) != 0 {
-			return shim.Error(fmt.Sprintf("%s is already exist", key))
+			Existed = append(Existed, key)
+			continue
+			// return shim.Error(fmt.Sprintf("%s is already exist", key))
 		}
 		if err = stub.PutState(key, []byte(value)); err != nil {
-			return shim.Error(fmt.Sprintf("There was an error adding record in the ledger: %s", err))
+
+			return shim.Error("106")
 		}
-		return shim.Success([]byte(fmt.Sprintf("record %s saved successfully", key)))
+		// return shim.Success([]byte(fmt.Sprintf("record %s saved successfully", key)))
 	}
-	return shim.Success([]byte(fmt.Sprintf("batch record saved successfully")))
+	if len(Existed) > 0 {
+		return shim.Success([]byte(fmt.Sprintf("%s, %s", "200", Existed)))
+	}
+	return shim.Success([]byte("200"))
 }
 
 func delRecord(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) != 1 {
-		return shim.Error("args numberis wrong, require 1 args")
+		return shim.Error("100")
 	}
 	key := args[0]
 	if key == "" {
-		return shim.Error("args is illegal")
+		return shim.Error("101")
 	}
 	value, err := stub.GetState(key)
 	if err != nil || len(value) == 0 {
-		return shim.Error(fmt.Sprintf("Record: %s is not exist", key))
+		return shim.Error("102")
 	}
 	err = stub.DelState(key)
 	if err != nil {
-		return shim.Error(fmt.Sprintf("Record: %s deletion failed", key))
+		return shim.Error("106")
 	}
-	return shim.Success([]byte(fmt.Sprintf("Record: %s deleted", key)))
+	return shim.Success([]byte("200"))
 }
 
 func updateRecord(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) != 2 {
-		return shim.Error("args numberis wrong, require 2 args")
+		return shim.Error("100")
 	}
 	key := args[0]
 	value := args[1]
 	if key == "" {
-		return shim.Error("args is illegal")
+		return shim.Error("101")
 	}
 	val, err := stub.GetState(key)
 	if err != nil || len(val) == 0 {
-		return shim.Error(fmt.Sprintf("Record: %s is not exist", key))
+		return shim.Error("103")
 	}
 	err = stub.DelState(key)
 	if err != nil {
-		return shim.Error(fmt.Sprintf("Record: %s deletion failed", key))
+		return shim.Error("106")
 	}
 	if err = stub.PutState(key, []byte(value)); err != nil {
-		return shim.Error(fmt.Sprintf("There was an error update the Record in the ledger: %s", err))
+		return shim.Error("106")
 	}
-	return shim.Success([]byte(fmt.Sprintf("Record %s update successfully", key)))
+	return shim.Success([]byte("200"))
 }
 
 func searchRecord(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) != 1 {
-		return shim.Error("args numberis wrong, require 1 args")
+		return shim.Error("100")
 	}
 	key := args[0]
 	if key == "" {
-		return shim.Error("args is illegal")
+		return shim.Error("101")
 	}
 	value, err := stub.GetState(key)
 	if err != nil || len(value) == 0 {
-		return shim.Error(fmt.Sprintf("Record: %s is not exist", value))
+		return shim.Error("103")
 	}
 	return shim.Success(value)
 }
@@ -142,7 +154,7 @@ func (t *simpleCC) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	case "searchRecord":
 		return searchRecord(stub, args)
 	default:
-		return shim.Error(fmt.Sprintf("不支持的方法: %s", funcName))
+		return shim.Error("107")
 	}
 }
 

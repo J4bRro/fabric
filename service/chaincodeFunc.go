@@ -10,7 +10,7 @@ func (t *ServiceSetup) AddRecord(key string, value string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(respone.TransactionID), nil
+	return string(respone.Payload), nil
 }
 
 func (t *ServiceSetup) BatchAddRecord(jsonStream string) (string, error) {
@@ -19,7 +19,7 @@ func (t *ServiceSetup) BatchAddRecord(jsonStream string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(respone.TransactionID), nil
+	return string(respone.Payload), nil
 }
 
 func (t *ServiceSetup) DelRecord(key string) (string, error) {
@@ -28,7 +28,7 @@ func (t *ServiceSetup) DelRecord(key string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(respone.TransactionID), nil
+	return string(respone.Payload), nil
 }
 
 func (t *ServiceSetup) UpdateRecord(key string, value string) (string, error) {
@@ -37,7 +37,7 @@ func (t *ServiceSetup) UpdateRecord(key string, value string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(respone.TransactionID), nil
+	return string(respone.Payload), nil
 }
 
 func (t *ServiceSetup) SearchRecord(key string) (string, error) {
