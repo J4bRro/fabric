@@ -46,6 +46,16 @@ func SetupSDK(ConfigFile string, initialized bool, info *InitInfo) (*fabsdk.Fabr
 	return sdk, nil
 }
 
+func JoinChannel(sdk *fabsdk.FabricSDK, info *InitInfo) error {
+	err := info.OrgResMgmt.JoinChannel(info.ChannelID, resmgmt.WithRetry(retry.DefaultResMgmtOpts), resmgmt.WithOrdererEndpoint(info.OrdererOrgName))
+	if err != nil {
+		return fmt.Errorf("Peers加入通道失败: %v", err)
+	}
+
+	fmt.Println("peers 已成功加入通道.")
+	return nil
+}
+
 func CreateAndJoinChannel(sdk *fabsdk.FabricSDK, info *InitInfo) error {
 
 	// New creates a new Client instance
