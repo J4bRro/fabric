@@ -9,7 +9,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/hyperledger/uni-utils/service"
+	"github.com/J4bRro/fabric/service"
 )
 
 type Application struct {
