@@ -13,9 +13,10 @@ func (t *ServiceSetup) AddRecord(key string, value string) (string, error) {
 	return string(respone.Payload), nil
 }
 
-func (t *ServiceSetup) BatchAddRecord(jsonStream string) (string, error) {
+func (t *ServiceSetup) BatchAddRecord(jsonStream string， peer string) (string, error) {
 	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "batchAddRecord", Args: [][]byte{[]byte(jsonStream)}}
-	respone, err := t.Client.Execute(req)
+	reqPeer := channel.WithTargetEndpoints(peer)
+	respone, err := t.Client.Execute(req, reqPeer)
 	if err != nil {
 		return "", err
 	}
@@ -40,9 +41,10 @@ func (t *ServiceSetup) UpdateRecord(key string, value string) (string, error) {
 	return string(respone.Payload), nil
 }
 
-func (t *ServiceSetup) SearchRecord(key string) (string, error) {
+func (t *ServiceSetup) SearchRecord(key string, peer string) (string, error) {
 	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "searchRecord", Args: [][]byte{[]byte(key)}}
-	respone, err := t.Client.Query(req)
+	reqPeer := channel.WithTargetEndpoints(peer)
+	respone, err := t.Client.Query(req, reqPeer)
 	if err != nil {
 		return "", err
 	}
