@@ -13,7 +13,7 @@ func (t *ServiceSetup) AddRecord(key string, value string) (string, error) {
 	return string(respone.Payload), nil
 }
 
-func (t *ServiceSetup) BatchAddRecord(jsonStream string， peer string) (string, error) {
+func (t *ServiceSetup) BatchAddRecord(jsonStream string, peer string) (string, error) {
 	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "batchAddRecord", Args: [][]byte{[]byte(jsonStream)}}
 	reqPeer := channel.WithTargetEndpoints(peer)
 	respone, err := t.Client.Execute(req, reqPeer)
